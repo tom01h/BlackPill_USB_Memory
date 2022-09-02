@@ -25,6 +25,7 @@ MSC_MEDIA_PACKETは4KB
 ![](image/USB_DEVICE.png)
 
 #### FATFSの設定
+MAX_SS,MIN_SSを4096にする  
 ![](image/FATFS.png)
 
 ## Clock Confgurationタブ
