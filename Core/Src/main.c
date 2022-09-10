@@ -44,7 +44,7 @@
 SPI_HandleTypeDef hspi1;
 
 /* USER CODE BEGIN PV */
-extern USBD_HandleTypeDef hUsbDeviceFS;
+bool isUSBMSC;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -67,6 +67,7 @@ static void MX_SPI1_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+  isUSBMSC = false;
 
   /* USER CODE END 1 */
 
@@ -96,8 +97,8 @@ int main(void)
   uint8_t wtext[] = "Hi, this is STM32 working with FatFs\n";
 
   HAL_Delay(1000);
-  if((hUsbDeviceFS.dev_state != USBD_STATE_CONFIGURED)){
-  
+  if(!isUSBMSC){
+
     if(f_mount(&USERFatFS, USERPath, 1) != FR_OK) {
       Error_Handler();
     }

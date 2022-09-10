@@ -24,6 +24,7 @@
 /* USER CODE BEGIN INCLUDE */
 #include "w25_flash.h"
 #include "spi.h"
+#include <stdbool.h>
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -115,7 +116,7 @@ const int8_t STORAGE_Inquirydata_FS[] = {/* 36 */
 /* USER CODE END INQUIRY_DATA_FS */
 
 /* USER CODE BEGIN PRIVATE_VARIABLES */
-
+extern bool isUSBMSC;
 /* USER CODE END PRIVATE_VARIABLES */
 
 /**
@@ -245,6 +246,8 @@ int8_t STORAGE_Read_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t bl
   w25_flash_read_data(blk_addr*4096, (uint8_t *)buf, 4096);
   UNUSED(lun);
   UNUSED(blk_len);
+
+  isUSBMSC = true;
 
   return (USBD_OK);
   /* USER CODE END 6 */
