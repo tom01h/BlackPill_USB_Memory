@@ -99,8 +99,8 @@ int main(void)
   HAL_Delay(1000);
   if(!isUSBMSC){
 
-    if(f_mount(&USERFatFS, USERPath, 1) != FR_OK) {
-      Error_Handler();
+    while(f_mount(&USERFatFS, USERPath, 1) != FR_OK) {
+      HAL_Delay(1000);
     }
     if(f_open(&USERFile, "STM32.TXT", FA_CREATE_ALWAYS | FA_WRITE) != FR_OK) {
       Error_Handler();
@@ -116,6 +116,11 @@ int main(void)
       {
         f_close(&USERFile);
       }
+    }
+
+    while(1){
+      HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+      HAL_Delay(500);
     }
 
   }    
@@ -231,7 +236,17 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : PC13 */
+  GPIO_InitStruct.Pin = GPIO_PIN_13;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PA4 */
   GPIO_InitStruct.Pin = GPIO_PIN_4;
