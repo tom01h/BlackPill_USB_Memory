@@ -35,4 +35,4 @@ USBのクロックは48MHzでないとダメ
 ## Project Managerタブ
 Linker設定  
 スタックとかヒープのサイズを増やす  
-![](image/linker.png)
+![](image/Linker.png)
