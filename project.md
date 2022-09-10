@@ -31,3 +31,8 @@ MAX_SS,MIN_SSを4096にする
 ## Clock Confgurationタブ
 USBのクロックは48MHzでないとダメ  
 ![](image/CLOCK.png)
+
+## Project Managerタブ
+Linker設定  
+スタックとかヒープのサイズを増やす  
+![](image/linker.png)

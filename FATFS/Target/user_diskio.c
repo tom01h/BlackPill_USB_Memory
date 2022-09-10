@@ -83,7 +83,7 @@ DSTATUS USER_initialize (
 )
 {
   /* USER CODE BEGIN INIT */
-    Stat = STA_NOINIT;
+    Stat = RES_OK;//STA_NOINIT;
     return Stat;
   /* USER CODE END INIT */
 }
@@ -98,7 +98,7 @@ DSTATUS USER_status (
 )
 {
   /* USER CODE BEGIN STATUS */
-    Stat = STA_NOINIT;
+    Stat = RES_OK;//STA_NOINIT;
     return Stat;
   /* USER CODE END STATUS */
 }

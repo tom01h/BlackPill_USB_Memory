@@ -19,9 +19,15 @@ Black Pill STM32F411にSPI Flashをつけて4MBのUSBメモリにする
 project.md参照
 
 ## ソースコード準備
-STM32CubeIDEで生成したファイルの一部を、このリポジトリのファイルで上書きする。
+- STM32CubeIDEで生成したファイルの一部を、このリポジトリのファイルで上書きする
+- [Winbond W25Q series tiny driver](https://github.com/tom01h/winbond-w25-flash-drv)をダウンロードする。
+    - `spi.c, w25_flash.c` を `Core/Src/` にコピーする
+    - `spi.h, w25_flash.h` を `Core/Inc/` にコピーする
 
-[Winbond W25Q series tiny driver](https://github.com/tom01h/winbond-w25-flash-drv)をダウンロードする。  
-`spi.c, w25_flash.c` を `Core/Src/` にコピーする  
-`spi.h, w25_flash.h` を `Core/Inc/` にコピーする
-
+## 実行
+- STM32CubeIDEで書き込む
+- PCにつなぐとUSBメモリとして認識する
+    - 最初はフォーマットが必要
+- 電源だけつなぐと `STM32.TXT` ができる
+    - Type-Cからだとダメなんだけど
+    - ピンヘッダから (ST-Link経由で) 電源入れた時しか出来ない
