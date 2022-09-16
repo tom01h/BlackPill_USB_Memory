@@ -15,6 +15,9 @@ Black Pill STM32F411にSPI Flashをつけて4MBのUSBメモリにする
 はんだ付けする  
 ![](image/はんだ.png)
 
+VB端子にRTCバックアップ電池を接続する  
+(最初だけRTCの時刻設定をする (コメントアウトを外す))
+
 ## Project作成
 project.md参照
 

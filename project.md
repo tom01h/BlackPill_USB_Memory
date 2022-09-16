@@ -17,6 +17,11 @@
 GPIO PA4を出力で使う  
 ![](image/GPIO.png)
 
+#### RTCを使う
+なんか文句ありげに見えるけどこのまま  
+Activate Calenderをチェックすると毎回時刻が初期化される  
+![](image/RTC.png)
+
 #### USBの設定
 ![](image/USB_FS.png)
 
@@ -30,6 +35,7 @@ MAX_SS,MIN_SSを4096にする
 
 ## Clock Confgurationタブ
 USBのクロックは48MHzでないとダメ  
+RTCのクロックを外部の32.768kHzにする  
 ![](image/CLOCK.png)
 
 ## Project Managerタブ
