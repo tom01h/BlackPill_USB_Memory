@@ -15,7 +15,7 @@ extern RTC_HandleTypeDef hrtc;
 extern "C" void main_cpp(UART_HandleTypeDef * con, UART_HandleTypeDef * mhz, I2C_HandleTypeDef * hi2c)
 {
 	BMP280_HandleTypedef bmp280;
-	//MHZ MHZ(mhz);
+	MHZ MHZ(mhz);
 
 	float pressure, temperature, humidity;
 	u_int8_t buffer[256];
@@ -49,8 +49,7 @@ extern "C" void main_cpp(UART_HandleTypeDef * con, UART_HandleTypeDef * mhz, I2C
 			HAL_UART_Transmit(con, buffer, size, 1000);
 			HAL_Delay(2000);
 		}
-		int co2 = 400;
-		//int co2 = MHZ.readCO2UART();
+		int co2 = MHZ.readCO2UART();
 
 		size = sprintf((char *)buffer,"Temperature: %5.2f C, Humidity: %5.2f %%, Pressure: %7.2f hPa, CO2 %4d ppm\r\n", temperature, humidity, pressure/100, co2);
 		HAL_UART_Transmit(con, buffer, size, 1000);

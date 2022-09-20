@@ -21,7 +21,7 @@ int MHZ::readCO2UART() {
 
 	HAL_UART_Receive(_serial, (uint8_t *)response, 9, 1000);
 	while ( ! ((response[0] == 0xff) & (response[1] == 0x86)) ) {
-	  ///_serial->flush();
+	  __HAL_UART_FLUSH_DRREGISTER(_serial);
 	  //memset(response, 0, 9);
 	  HAL_Delay(100);  // wait a short moment
 	  HAL_UART_Transmit(_serial,(uint8_t *)cmd,9,3000);  // request PPM CO2
@@ -31,7 +31,7 @@ int MHZ::readCO2UART() {
 
 	int ppm_uart = 256 * (int)response[2] + response[3];
 
-	///_serial->flush();
+	__HAL_UART_FLUSH_DRREGISTER(_serial);
 	return ppm_uart;
 }
 

@@ -11,8 +11,7 @@ LCDはI2C接続のSSD1306コントローラーの載った128x32ドットのよ�
     - SSD1306コントローラーならいろいろ対応するみたいです
     - ライセンスは`LICENSE_SSD1360`を参照
 - [MH-Z14A, MH-Z19B CO2 ... Module](https://github.com/tobiasschuerg/MH-Z-CO2-Sensors)
-    - まだ使っていません
-    - STM32専用でないので改変量が多いかも
+    - 元がSTM32専用でないので改変量が多いかも
     - ライセンスは`LICENSE_MHZ`を参照
     
 ## 準備
@@ -37,7 +36,7 @@ USBメモリを作るprojectに加えて以下の設定をします
 - I2C2    SDA=B3, SCL=B10
 
 #### UARTを使う設定
-- UART1 TX=B6, RX=B6, 9600bpsにする必要ありそう
+- UART1 TX=B6, RX=B7, 9600bpsにする
 - UART2 TX=A2, RX=A3
 
 ## ソースコード準備

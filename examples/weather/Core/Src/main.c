@@ -115,8 +115,8 @@ int main(void)
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
   /*Initialize RTC
-  sTime.Hours = 0x13;
-  sTime.Minutes = 0x39;
+  sTime.Hours = 0x20;
+  sTime.Minutes = 0x51;
   sTime.Seconds = 0x0;
   sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
   sTime.StoreOperation = RTC_STOREOPERATION_RESET;
@@ -126,7 +126,7 @@ int main(void)
   }
   sDate.WeekDay = RTC_WEEKDAY_SUNDAY;
   sDate.Month = RTC_MONTH_SEPTEMBER;
-  sDate.Date = 0x19;
+  sDate.Date = 0x20;
   sDate.Year = 0x22;
   if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
   {
@@ -364,7 +364,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
+  huart1.Init.BaudRate = 9600;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
