@@ -15,14 +15,11 @@ LCDはI2C接続のSSD1306コントローラーの載った128x32ドットのよ�
     - ライセンスは`LICENSE_MHZ`を参照
     
 ## 準備
-センサの端子割り当ては暫定です
+センサの端子割り当て
 
 ```
-I2C_HandleTypeDef hi2c1;    ← LCD
-I2C_HandleTypeDef hi2c2;    ← BME280
-
-UART_HandleTypeDef huart1;  ← MH-Z19
-UART_HandleTypeDef huart2;  ← 端末(デバッグ用)
+SDA=B9, SCL=B8 ← BME280, LCD
+TX=B6,  RX=B7  ← MH-Z19
 ```
 
 ## Project作成
@@ -32,12 +29,10 @@ USBメモリを作るprojectに加えて以下の設定をします
 この時にTargeted LanguageをC++にすること
 
 #### I2Cを使う設定
-- I2C1    SDA=B9, SCL=B8
-- I2C2    SDA=B3, SCL=B10
+- I2C1    SDA=B9, SCL=B8 
 
 #### UARTを使う設定
 - UART1 TX=B6, RX=B7, 9600bpsにする
-- UART2 TX=A2, RX=A3
 
 ## ソースコード準備
 - STM32CubeIDEで生成したファイルの一部を、USBメモリを作るprojectのファイルで上書きする

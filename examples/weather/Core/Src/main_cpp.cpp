@@ -12,7 +12,7 @@
 extern RTC_HandleTypeDef hrtc;
 
 
-extern "C" void main_cpp(UART_HandleTypeDef * con, UART_HandleTypeDef * mhz, I2C_HandleTypeDef * hi2c)
+extern "C" void main_cpp(UART_HandleTypeDef * mhz, I2C_HandleTypeDef * hi2c)
 {
 	BMP280_HandleTypedef bmp280;
 	MHZ MHZ(mhz);
@@ -31,12 +31,12 @@ extern "C" void main_cpp(UART_HandleTypeDef * con, UART_HandleTypeDef * mhz, I2C
 
 	while (!bmp280_init(&bmp280, &bmp280.params)) {
 		size = sprintf((char *)buffer, "BMP280 initialization failed\r\n");
-		HAL_UART_Transmit(con, buffer, size, 1000);
+		//HAL_UART_Transmit(con, buffer, size, 1000);
 		HAL_Delay(2000);
 	}
 	bool bme280p = bmp280.id == BME280_CHIP_ID;
 	size = sprintf((char *)buffer, "BMP280: found %s\r\n", bme280p ? "BME280" : "BMP280");
-	HAL_UART_Transmit(con, buffer, size, 1000);
+	//HAL_UART_Transmit(con, buffer, size, 1000);
 
     ssd1306_Init();
 
@@ -46,13 +46,13 @@ extern "C" void main_cpp(UART_HandleTypeDef * con, UART_HandleTypeDef * mhz, I2C
 
     	while (!bmp280_read_float(&bmp280, &temperature, &pressure, &humidity)) {
 			size = sprintf((char *)buffer, "Temperature/pressure reading failed\r\n");
-			HAL_UART_Transmit(con, buffer, size, 1000);
+			//HAL_UART_Transmit(con, buffer, size, 1000);
 			HAL_Delay(2000);
 		}
 		int co2 = MHZ.readCO2UART();
 
 		size = sprintf((char *)buffer,"Temperature: %5.2f C, Humidity: %5.2f %%, Pressure: %7.2f hPa, CO2 %4d ppm\r\n", temperature, humidity, pressure/100, co2);
-		HAL_UART_Transmit(con, buffer, size, 1000);
+		//HAL_UART_Transmit(con, buffer, size, 1000);
 
 	    ssd1306_Fill(Black);
 	    sprintf((char *)buffer,"%5.2f C", temperature);
@@ -81,9 +81,9 @@ extern "C" void main_cpp(UART_HandleTypeDef * con, UART_HandleTypeDef * mhz, I2C
 			lastMinutes = sTime.Minutes;
     		size = sprintf((char *)buffer,"%4d-%02d-%02d, %02d:%02d\r\n",
     				sDate.Year+2000, sDate.Month, sDate.Date, sTime.Hours, sTime.Minutes);
-    		HAL_UART_Transmit(con, buffer, size, 1000);
+    		//HAL_UART_Transmit(con, buffer, size, 1000);
     		size = sprintf((char *)buffer,"Saving...");
-    		HAL_UART_Transmit(con, buffer, size, 1000);
+    		//HAL_UART_Transmit(con, buffer, size, 1000);
 
     		sprintf((char *)buffer,">");
     	    ssd1306_SetCursor(107, 22);
@@ -118,7 +118,7 @@ extern "C" void main_cpp(UART_HandleTypeDef * con, UART_HandleTypeDef * mhz, I2C
         		}
         	}
     		size = sprintf((char *)buffer,"Done\r\n");
-    		HAL_UART_Transmit(con, buffer, size, 1000);
+    		//HAL_UART_Transmit(con, buffer, size, 1000);
 
     		sprintf((char *)buffer,">>");
     	    ssd1306_SetCursor(114, 22);

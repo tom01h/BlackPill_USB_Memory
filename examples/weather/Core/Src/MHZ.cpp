@@ -14,18 +14,14 @@ int MHZ::readCO2UART() {
 	uint8_t cmd[9] = {0xFF, 0x01, 0x86, 0x00, 0x00, 0x00, 0x00, 0x00, 0x79};
 	uint8_t response[9];  // for answer
 
+	__HAL_UART_FLUSH_DRREGISTER(_serial);
 	HAL_UART_Transmit(_serial,(uint8_t *)cmd,9,3000);  // request PPM CO2
-
-	// clear the buffer
-	//memset(response, 0, 9);
-
 	HAL_UART_Receive(_serial, (uint8_t *)response, 9, 1000);
+
 	while ( ! ((response[0] == 0xff) & (response[1] == 0x86)) ) {
+	  HAL_Delay(1000);  // wait a short moment
 	  __HAL_UART_FLUSH_DRREGISTER(_serial);
-	  //memset(response, 0, 9);
-	  HAL_Delay(100);  // wait a short moment
 	  HAL_UART_Transmit(_serial,(uint8_t *)cmd,9,3000);  // request PPM CO2
-	  HAL_Delay(100);  // wait a short moment
 	  HAL_UART_Receive(_serial, (uint8_t *)response, 9, 1000);
 	}
 
