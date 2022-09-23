@@ -24,6 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdbool.h>
+#include "ssd1306.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -108,33 +109,53 @@ int main(void)
   MX_RTC_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-  /*Initialize RTC
-  sTime.Hours = 0x14;
-  sTime.Minutes = 0x03;
-  sTime.Seconds = 0x0;
-  sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-  sTime.StoreOperation = RTC_STOREOPERATION_RESET;
-  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
-  {
-      Error_Handler();
+  uint32_t bytesread;
+  char buffer[256];
+
+  HAL_Delay(1000);
+  if(!isUSBMSC){
+	/*Initialize RTC*/
+	while(f_mount(&USERFatFS, USERPath, 1) != FR_OK) {
+		HAL_Delay(1000);
+	}
+	if(f_open(&USERFile, "SETTIME.TXT", FA_OPEN_EXISTING | FA_READ) == FR_OK) {
+		retUSER = f_read(&USERFile, buffer, sizeof(buffer), (void *)&bytesread);
+		buffer[bytesread]=0;
+		//sscanf(buffer, "%02hhd-%02hhd-%02hhd %02hhd:%02hhd",
+		//		&sDate.Year, &sDate.Month, &sDate.Date,
+		//		&sTime.Hours, &sTime.Minutes);
+
+		buffer[2]=0;  	sDate.Year = atoi(&buffer[0]);
+		buffer[5]=0;		sDate.Month = atoi(&buffer[3]);
+		buffer[8]=0;		sDate.Date = atoi(&buffer[6]);
+		buffer[11]=0;		sTime.Hours = atoi(&buffer[9]);
+		buffer[14]=0;		sTime.Minutes = atoi(&buffer[12]);
+
+		sDate.WeekDay = RTC_WEEKDAY_SUNDAY;
+		if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
+		{
+			Error_Handler();
+		}
+
+		sTime.Seconds = 0x0;
+		sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+		sTime.StoreOperation = RTC_STOREOPERATION_RESET;
+		if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
+		{
+			Error_Handler();
+		}
+
+		f_close(&USERFile);
+	}
+	/*ここまで*/
+	main_cpp(&huart1, &hi2c1); //この関数からは戻らない
   }
-  sDate.WeekDay = RTC_WEEKDAY_SUNDAY;
-  sDate.Month = RTC_MONTH_SEPTEMBER;
-  sDate.Date = 0x23;
-  sDate.Year = 0x22;
-  if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  //ここまで*/
+  ssd1306_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  HAL_Delay(1000);
-  if(!isUSBMSC){
-	  main_cpp(&huart1, &hi2c1);
-  }
+
   while (1)
   {
     /* USER CODE END WHILE */
@@ -144,13 +165,19 @@ int main(void)
       HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
       HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
 
-      sprintf(date,"Date: %02d.%02d.%02d\t",sDate.Date,sDate.Month,sDate.Year+2000);
-      sprintf(time,"Time: %02d.%02d.%02d\r\n",sTime.Hours,sTime.Minutes,sTime.Seconds);
+      sprintf(date,"%04d-%02d-%02d",sDate.Year+2000,sDate.Month,sDate.Date);
+      sprintf(time,"%02d:%02d",sTime.Hours,sTime.Minutes);
 
+      ssd1306_Fill(Black);
+      ssd1306_SetCursor(2, 0);
+      ssd1306_WriteString((char*)date, Font_7x10, White);
+      ssd1306_SetCursor(2, 11);
+      ssd1306_WriteString((char*)time, Font_11x18, White);
+      ssd1306_UpdateScreen();
       //HAL_UART_Transmit(&huart2, (uint8_t *)date, strlen(date), 300);
       //HAL_UART_Transmit(&huart2, (uint8_t *)time, strlen(time), 300);
       HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-      HAL_Delay(100);
+      HAL_Delay(1000);
   }
   /* USER CODE END 3 */
 }
