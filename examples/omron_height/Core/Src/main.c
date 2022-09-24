@@ -117,63 +117,55 @@ int main(void)
   MX_I2C2_Init();
   MX_I2C3_Init();
   /* USER CODE BEGIN 2 */
-    /*Initialize RTC
-    sTime.Hours = 0x11;
-    sTime.Minutes = 0x11;
-    sTime.Seconds = 0x0;
-    sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-    sTime.StoreOperation = RTC_STOREOPERATION_RESET;
-    if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
-    {
-    	Error_Handler();
-    }
-    sDate.WeekDay = RTC_WEEKDAY_SATURDAY;
-    sDate.Month = RTC_MONTH_SEPTEMBER;
-    sDate.Date = 0x16;
-    sDate.Year = 0x22;
-    if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
-    {
-      Error_Handler();
-    }
-    //ここまで*/
-    HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
-    HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
-    sprintf(fname,"%02d%02d%02d%02d.csv",sDate.Month,sDate.Date,sTime.Hours,sTime.Minutes);
-  	/*
-    uint32_t byteswritten;
-	uint8_t wtext[] = "Hi, this is STM32 working with FatFs\n";
-
+	uint32_t bytesread;
+	char buffer[256];
 	HAL_Delay(1000);
-	if(!isUSBMSC){
 
+	if(!isUSBMSC){
+		/*Initialize RTC*/
 		while(f_mount(&USERFatFS, USERPath, 1) != FR_OK) {
 			HAL_Delay(1000);
 		}
-		if(f_open(&USERFile, fname, FA_CREATE_ALWAYS | FA_WRITE) != FR_OK) {
-			Error_Handler();
-		}
-		else
-		{
-			retUSER = f_write(&USERFile, wtext, sizeof(wtext), (void *)&byteswritten);
-			if((byteswritten == 0) || (retUSER != FR_OK))
+		if(f_open(&USERFile, "SETTIME.TXT", FA_OPEN_EXISTING | FA_READ) == FR_OK) {
+			retUSER = f_read(&USERFile, buffer, sizeof(buffer), (void *)&bytesread);
+			buffer[bytesread]=0;
+			//sscanf(buffer, "%02hhd-%02hhd-%02hhd %02hhd:%02hhd",
+			//		&sDate.Year, &sDate.Month, &sDate.Date,
+			//		&sTime.Hours, &sTime.Minutes);
+
+			buffer[2]=0;  	sDate.Year = atoi(&buffer[0]);
+			buffer[5]=0;		sDate.Month = atoi(&buffer[3]);
+			buffer[8]=0;		sDate.Date = atoi(&buffer[6]);
+			buffer[11]=0;		sTime.Hours = atoi(&buffer[9]);
+			buffer[14]=0;		sTime.Minutes = atoi(&buffer[12]);
+
+			sDate.WeekDay = RTC_WEEKDAY_SUNDAY;
+			if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
 			{
 				Error_Handler();
 			}
-			else
+
+			sTime.Seconds = 0x0;
+			sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+			sTime.StoreOperation = RTC_STOREOPERATION_RESET;
+			if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
 			{
-				f_close(&USERFile);
+				Error_Handler();
 			}
+
+			f_close(&USERFile);
 		}
+		/*ここまで*/
+	    HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+	    HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+	    sprintf(fname,"%02d%02d%02d%02d.csv",sDate.Month,sDate.Date,sTime.Hours,sTime.Minutes);
+		main_cpp(&huart2, &hi2c1, &hi2c2, &hi2c3, fname);
 	}
-	*/
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	HAL_Delay(1000);
-	if(!isUSBMSC){
-	  main_cpp(&huart2, &hi2c1, &hi2c2, &hi2c3, fname);
-	}
+
   while (1)
   {
     /* USER CODE END WHILE */

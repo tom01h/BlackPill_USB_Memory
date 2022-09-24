@@ -10,7 +10,7 @@ extern "C" void main_cpp(UART_HandleTypeDef * huart2, I2C_HandleTypeDef * hi2c1,
 {
     uint8_t SDO;
     SDO = 1;
-    Omron2SMPB02E prs0(hi2c3, SDO);
+    Omron2SMPB02E prs0(hi2c1, SDO);
     Omron2SMPB02E prs1(hi2c2, SDO);
     SDO = 0;
     Omron2SMPB02E prs2(hi2c1, SDO);

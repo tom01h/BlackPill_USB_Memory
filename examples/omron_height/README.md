@@ -7,12 +7,12 @@ I2Cに4個の2SMPB-02Eを接続して200msごとに高度を計測してメモ�
 ## 準備
 センサーモジュールは[TECHNOALTA-2SMPB-02E-G](https://www.marutsu.co.jp/pc/i/1358763/)を使っています
 
-I2C1, I2C2, I2C3に4個のセンサを接続する  
+I2C1, I2C2に4個のセンサを接続する (I2C3は使っていない)  
 I2Cアドレスを変更するためにSJ1をショートしたのがSDO=0の方  
 `main_cpp.cpp`の以下の部分とI2Cの接続を一致させる
 ```
     SDO = 1;
-    Omron2SMPB02E prs0(hi2c3, SDO);
+    Omron2SMPB02E prs0(hi2c1, SDO);
     Omron2SMPB02E prs1(hi2c2, SDO);
     SDO = 0;
     Omron2SMPB02E prs2(hi2c1, SDO);
@@ -48,3 +48,7 @@ UART2を有効にする
 - PCにつなぐとUSBメモリとして認識する
     - 最初はフォーマットが必要
 - 電源だけつなぐと、標高データ(単位は㎝)のログファイル `月日時分.CSV` ができる
+- 電源だけつないだ時に `SETTIME.TXT` があると時刻を設定する
+    ```
+    22-09-23 20:11
+    ```
