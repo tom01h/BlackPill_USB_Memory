@@ -37,6 +37,9 @@ MAX_SS,MIN_SSを4096にする
 USBのクロックは48MHzでないとダメ  
 RTCのクロックを外部の32.768kHzにする  
 ![](image/CLOCK.png)
+STM32F401の場合  
+main.cはこの設定で上書きすること
+![](image/STM32F401.png)
 
 ## Project Managerタブ
 Linker設定  
