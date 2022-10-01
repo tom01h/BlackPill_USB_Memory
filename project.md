@@ -1,6 +1,7 @@
 # Project設定
 ## Project作成
-#### STMF411CEU6を選択
+#### STM32F411CEU6を選択
+またはSTM32F401CDU6
 ![](image/F411.png)
 
 #### 名前を決める
