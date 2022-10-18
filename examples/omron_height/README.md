@@ -27,11 +27,15 @@ USBメモリを作るprojectに加えて以下の設定をします
 
 #### I2Cを使う設定
 I2C1, I2C2, I2C3を有効にする  
+Speed Mode は Fast Mode にする  
 ![](image/I2C.png)
 
 #### UARTを使う設定
-UART2を有効にする  
+UART1,2を有効にする  
 ![](image/UART.png)
+
+#### 端子の設定
+![](image/PIN.png)
 
 ## ソースコード準備
 - STM32CubeIDEで生成したファイルの一部を、USBメモリを作るprojectのファイルで上書きする
