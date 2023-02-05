@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2022 STMicroelectronics.
+  * Copyright (c) 2023 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -47,17 +47,17 @@ void MX_FATFS_Init(void)
 DWORD get_fattime(void)
 {
   /* USER CODE BEGIN get_fattime */
-	RTC_TimeTypeDef sTime;
-	RTC_DateTypeDef sDate;
-	HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
-	HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+    RTC_TimeTypeDef sTime;
+    RTC_DateTypeDef sDate;
+    HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+    HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
 
-	return((DWORD)(sDate.Year+2000 - 1980) << 25)
-			| ((DWORD)sDate.Month << 21)
-			| ((DWORD)sDate.Date << 16)
-			| ((DWORD)sTime.Hours << 11)
-			| ((DWORD)sTime.Minutes << 5)
-			| ((DWORD)sTime.Seconds >> 1);
+    return((DWORD)(sDate.Year+2000 - 1980) << 25)
+                    | ((DWORD)sDate.Month << 21)
+                    | ((DWORD)sDate.Date << 16)
+                    | ((DWORD)sTime.Hours << 11)
+                    | ((DWORD)sTime.Minutes << 5)
+                    | ((DWORD)sTime.Seconds >> 1);
   /* USER CODE END get_fattime */
 }
 

@@ -8,6 +8,8 @@ Black Pill STM32F411にSPI Flashをつけて4MBのUSBメモリにする
 また、追加で以下のSPI Flashライブラリを使います
 - [Winbond W25Q series tiny driver](https://github.com/tom01h/winbond-w25-flash-drv)
 
+main.c を F401CCU6 にした
+
 ## 準備
 この部品を  
 ![](image/部品.png)

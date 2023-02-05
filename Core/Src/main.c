@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2022 STMicroelectronics.
+  * Copyright (c) 2023 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -23,6 +23,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
 #include <stdbool.h>
 /* USER CODE END Includes */
 
@@ -45,6 +46,8 @@ RTC_HandleTypeDef hrtc;
 
 SPI_HandleTypeDef hspi1;
 
+UART_HandleTypeDef huart2;
+
 /* USER CODE BEGIN PV */
 bool isUSBMSC;
 /* USER CODE END PV */
@@ -52,6 +55,7 @@ bool isUSBMSC;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_USART2_UART_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_RTC_Init(void);
 /* USER CODE BEGIN PFP */
@@ -70,10 +74,11 @@ static void MX_RTC_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  char fname[30];
-  RTC_TimeTypeDef sTime;
-  RTC_DateTypeDef sDate;
-  isUSBMSC = false;
+	u_int8_t buffer[256];
+	char fname[30];
+	RTC_TimeTypeDef sTime;
+	RTC_DateTypeDef sDate;
+	isUSBMSC = false;
 
   /* USER CODE END 1 */
 
@@ -90,82 +95,80 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
+
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_USB_DEVICE_Init();
+  MX_USART2_UART_Init();
   MX_SPI1_Init();
-  MX_FATFS_Init();
   MX_RTC_Init();
+  MX_FATFS_Init();
+  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
 
   uint32_t bytesread;
   uint32_t byteswritten;
   uint8_t wtext[] = "Hi, this is STM32 working with FatFs\n";
-  char buffer[256];
 
   HAL_Delay(1000);
   if(!isUSBMSC){
-	while(f_mount(&USERFatFS, USERPath, 1) != FR_OK) {
-		HAL_Delay(1000);
-	}
-	if(f_open(&USERFile, "SETTIME.TXT", FA_OPEN_EXISTING | FA_READ) == FR_OK) {
-		retUSER = f_read(&USERFile, buffer, sizeof(buffer), (void *)&bytesread);
-		buffer[bytesread]=0;
-		//sscanf(buffer, "%02hhd-%02hhd-%02hhd %02hhd:%02hhd",
-		//		&sDate.Year, &sDate.Month, &sDate.Date,
-		//		&sTime.Hours, &sTime.Minutes);
+        while(f_mount(&USERFatFS, USERPath, 1) != FR_OK) {
+                HAL_Delay(1000);
+        }
+        if(f_open(&USERFile, "SETTIME.TXT", FA_OPEN_EXISTING | FA_READ) == FR_OK) {
+                retUSER = f_read(&USERFile, buffer, sizeof(buffer), (void *)&bytesread);
+                buffer[bytesread]=0;
+                //sscanf(buffer, "%02hhd-%02hhd-%02hhd %02hhd:%02hhd",
+                //              &sDate.Year, &sDate.Month, &sDate.Date,
+                //              &sTime.Hours, &sTime.Minutes);
 
-		buffer[2]=0;  	sDate.Year = atoi(&buffer[0]);
-		buffer[5]=0;		sDate.Month = atoi(&buffer[3]);
-		buffer[8]=0;		sDate.Date = atoi(&buffer[6]);
-		buffer[11]=0;		sTime.Hours = atoi(&buffer[9]);
-		buffer[14]=0;		sTime.Minutes = atoi(&buffer[12]);
+                buffer[2]=0;    sDate.Year = atoi(&buffer[0]);
+                buffer[5]=0;    sDate.Month = atoi(&buffer[3]);
+                buffer[8]=0;    sDate.Date = atoi(&buffer[6]);
+                buffer[11]=0;   sTime.Hours = atoi(&buffer[9]);
+                buffer[14]=0;   sTime.Minutes = atoi(&buffer[12]);
 
-		sDate.WeekDay = RTC_WEEKDAY_SUNDAY;
-		if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
-		{
-			Error_Handler();
+                sDate.WeekDay = RTC_WEEKDAY_SUNDAY;
+                if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
+                {
+                        Error_Handler();
+                }
+
+                sTime.Seconds = 0x0;
+                sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+                sTime.StoreOperation = RTC_STOREOPERATION_RESET;
+                if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
+                {
+                        Error_Handler();
+                }
+
+                f_close(&USERFile);
 		}
 
-		sTime.Seconds = 0x0;
-		sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-		sTime.StoreOperation = RTC_STOREOPERATION_RESET;
-		if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
-		{
-			Error_Handler();
-		}
 
-		f_close(&USERFile);
-    }
+		HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+		HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+	    sprintf(fname,"%02d%02d%02d%02d.txt",sDate.Month,sDate.Date,sTime.Hours,sTime.Minutes);
+	    if(f_open(&USERFile, fname, FA_CREATE_ALWAYS | FA_WRITE) != FR_OK) {
+	      Error_Handler();
+	    }
+	    else
+	    {
+	      retUSER = f_write(&USERFile, wtext, strlen(wtext), (void *)&byteswritten);
+	      if((byteswritten == 0) || (retUSER != FR_OK))
+	      {
+	        Error_Handler();
+	      }
+	      else
+	      {
+	        f_close(&USERFile);
+	      }
+	    }
+
+  }
 
 
-    HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
-    HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
-    sprintf(fname,"%02d%02d%02d%02d.txt",sDate.Month,sDate.Date,sTime.Hours,sTime.Minutes);
-    if(f_open(&USERFile, fname, FA_CREATE_ALWAYS | FA_WRITE) != FR_OK) {
-      Error_Handler();
-    }
-    else
-    {
-      retUSER = f_write(&USERFile, wtext, strlen(wtext), (void *)&byteswritten);
-      if((byteswritten == 0) || (retUSER != FR_OK))
-      {
-        Error_Handler();
-      }
-      else
-      {
-        f_close(&USERFile);
-      }
-    }
-
-    while(1){
-      HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-      HAL_Delay(500);
-    }
-
-  }    
 
   /* USER CODE END 2 */
 
@@ -173,6 +176,8 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  HAL_Delay(500);
+	  HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -192,20 +197,20 @@ void SystemClock_Config(void)
   /** Configure the main internal regulator output voltage
   */
   __HAL_RCC_PWR_CLK_ENABLE();
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE2);
 
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_LSE;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.LSEState = RCC_LSE_ON;
+  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 25;
-  RCC_OscInitStruct.PLL.PLLN = 192;
+  RCC_OscInitStruct.PLL.PLLN = 144;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLQ = 4;
+  RCC_OscInitStruct.PLL.PLLQ = 3;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -220,7 +225,7 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_3) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
   {
     Error_Handler();
   }
@@ -296,6 +301,39 @@ static void MX_SPI1_Init(void)
   /* USER CODE BEGIN SPI1_Init 2 */
 
   /* USER CODE END SPI1_Init 2 */
+
+}
+
+/**
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART2_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 115200;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
 
 }
 

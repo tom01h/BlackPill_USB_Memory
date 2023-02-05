@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2022 STMicroelectronics.
+  * Copyright (c) 2023 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -121,7 +121,7 @@ DRESULT USER_read (
   /* USER CODE BEGIN READ */
 	w25_flash_read_data(sector*4096, (uint8_t *)buff, 4096);
 	//SFlash_ReadSector(sector, (uint8_t*)buff);
-    return RES_OK;
+	return RES_OK;
   /* USER CODE END READ */
 }
 
@@ -142,13 +142,13 @@ DRESULT USER_write (
 )
 {
   /* USER CODE BEGIN WRITE */
-	w25_flash_write_enable();
-	w25_flash_sector_erase(sector*4096);
-	for(int i=0; i<16; i++){
-		w25_flash_write_enable();
-		w25_flash_page_program(sector*4096+256*i, (void *)&buff[256*i], 256, false);
-	}
-	//SFlash_WriteSector(sector, (uint8_t*)buff);
+    w25_flash_write_enable();
+    w25_flash_sector_erase(sector*4096);
+    for(int i=0; i<16; i++){
+            w25_flash_write_enable();
+            w25_flash_page_program(sector*4096+256*i, (void *)&buff[256*i], 256, false);
+    }
+    //SFlash_WriteSector(sector, (uint8_t*)buff);
   /* USER CODE HERE */
     return RES_OK;
   /* USER CODE END WRITE */

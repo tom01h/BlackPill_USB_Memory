@@ -7,7 +7,7 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2022 STMicroelectronics.
+  * Copyright (c) 2023 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -264,12 +264,12 @@ int8_t STORAGE_Read_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t bl
 int8_t STORAGE_Write_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t blk_len)
 {
   /* USER CODE BEGIN 7 */
-  w25_flash_write_enable();
-  w25_flash_sector_erase(blk_addr*4096);
-  for(int i=0; i<16; i++){
 	w25_flash_write_enable();
-	w25_flash_page_program(blk_addr*4096+256*i, (void *)&buf[256*i], 256, false);
-  }
+	w25_flash_sector_erase(blk_addr*4096);
+	for(int i=0; i<16; i++){
+	    w25_flash_write_enable();
+	    w25_flash_page_program(blk_addr*4096+256*i, (void *)&buf[256*i], 256, false);
+	}
   UNUSED(lun);
   UNUSED(blk_len);
 
